@@ -129,6 +129,7 @@ jobs:
         run: |
           echo "$FUNCTION_APP_SLOT_NAME"
           echo "FUNCTION_APP_PUB_PROFILE=$(az functionapp deployment list-publishing-profiles --subscription $AZURE_SUBSCRIPTION_ID --resource-group $FUNCTION_APP_RESOURCE_GROUP --name $FUNCTION_APP_NAME --slot $FUNCTION_APP_SLOT_NAME --xml)" >> $GITHUB_ENV
+          echo ${{ env.FUNCTION_APP_PUB_PROFILE }}
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           FUNCTION_APP_RESOURCE_GROUP: ${{ secrets.AZURE_FUNCTIONAPP_RESOURCEGROUP }}
