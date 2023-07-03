@@ -211,12 +211,16 @@ jobs:
       ######################################################################
       # deploy function app
       ######################################################################
-      - name: 🚀 Deploy Azure Functions app
-        uses: Azure/functions-action@v1
+      - name: 🚀 Deploy Azure Function app HTTP Trigger
+        uses: Azure/functions-action@v1.5.0
         with:
+          # Name of the Azure Function App
           app-name: ${{ env.FUNCTION_APP_NAME }}
-          package: '.'
+          # Path to package or folder. *.zip or a folder to deploy
+          package: './AKVAADAppClientSecretRotationHttp'
+          # Publish profile (*.publishsettings) file contents with web deploy secrets
           publish-profile: ${{ env.FUNCTION_APP_PUB_PROFILE }}
+          # Remove unwanted files defined in .funcignore file (default: 'false'). When this is set to 'true', 'package' should point to the folder of host.json.
           respect-funcignore: true
 
       ######################################################################
