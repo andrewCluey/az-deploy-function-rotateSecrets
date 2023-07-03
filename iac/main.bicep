@@ -21,7 +21,7 @@ module functionApp 'br:ascbicep.azurecr.io/bicep/modules/functionapp:v1.5' = {
   }
 }
 
-module functionAppSettings 'br:ascbicep.azurecr.io/bicep/modules/funtionappsettings:v1.2' = {
+module functionAppSettings 'br:ascbicep.azurecr.io/bicep/modules/functionappsettings:v1.3' = {
   name: 'devFuncRotateSecretsSettings'
   params: {
     appInsightsInstrumentationKey: functionApp.outputs.appInsightsInstrumentationKey
