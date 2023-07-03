@@ -1,0 +1,91 @@
+name: Deploy upon release
+
+on:
+  release:
+    types: [published]
+
+env:
+  # all Azure Functions are at the root of the project
+  AZURE_FUNCTION_APP_PACKAGE_PATH: ''
+  KV_SUBSCRIPTION_ID:
+  KV_NAME:
+  
+  
+  # ARM deployment instance name (used to extract outputs)
+  # -----------------------------------------------
+  DEPLOYMENT_NAME: GH_CICD_${{ github.run_id }}
+    
+  # bot credentials deployments rights on resource group
+  # -----------------------------------------------
+  # AZURE_CLIENT_ID: <secret>
+  # AZURE_TENANT_ID: <secret>
+  # AZURE_SUBSCRIPTION_ID: <secret>
+    
+  # function app settings
+  # -----------------------------------------------
+  # AZURE_FUNCTIONAPP_RESOURCEGROUP: <secret>
+  # AZURE_RESOURCE_NAME_PREFIX: <secret>    
+  # variables dynamically set in workflow after running ARM deployment step
+  # -----------------------------------------------
+  # FUNCTION_APP_NAME: <env>
+  # FUNCTION_APP_SLOT_NAME: <env>
+  # AZURE_APPCONFIG_NAME: <env>
+  # FUNCTION_APP_PUB_PROFILE: <env>
+    
+  # GH permission requests for OpenID token for auth with Azure federated creds
+  permissions:
+    id-token: write
+    contents: read
+
+
+jobs:
+  deploy-published-release:
+    runs-on: ubuntu-latest
+    steps:
+      ######################################################################
+      # login to Azure CLI via federated credential
+      ######################################################################
+      - name: 🔑 Login to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      
+      ######################################################################
+      # get SPN auth secrets
+      ######################################################################
+      - name: Get SPN Secrets
+          shell: bash
+          run: |
+            secret_names_array=$(az keyvault secret list --subscription ${{ env.KV_SUBSCRIPTION_ID }} --vault-name ${{ env.KV_NAME }} --output tsv --query '[].name')
+      
+            for name in $secret_names_array; do
+              value=$(az keyvault secret show --subscription ${{ env.KV_SUBSCRIPTION_ID }} --vault-name ${{ env.KV_NAME }} --name ${name} --query value --output tsv)
+              modified_name=$(echo $name | sed 's/\([a-z]\)\([A-Z]\)/\1_\U\2/g' | tr "-" "_" | tr '[:lower:]' '[:upper:]')
+              echo "Saving '${name}' Key Vault secret as environment variable: ${modified_name}"
+              echo "$modified_name=$value" >>$GITHUB_ENV
+              echo "::add-mask::$value"
+            done
+
+
+      ######################################################################
+      # Login to Azure using returned Secrets & swap deployment slot
+      ######################################################################
+      - name: 🔑 SPN Login to Azure
+      run: |
+        az login --service-principal --tenant $TENANT_ID --username $CLIENT_ID --password $CLIENT_SECRET    
+      env:
+        TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+      - name: 🔀 Swap staging & production deployment slot
+        run: |
+          az functionapp deployment slot swap --resource-group $FUNCTION_APP_RESOURCE_GROUP --name $FUNCTION_APP_NAME --slot $FUNCTION_APP_STAGING_SLOT --target-slot $FUNCTION_APP_PRODUCTION_SLOT    
+        env:
+          FUNCTION_APP_RESOURCE_GROUP: ${{ secrets.AZURE_FUNCTIONAPP_RESOURCEGROUP }}
+          FUNCTION_APP_NAME: ${{ env.AZURE_FUNCTION_APP_NAME }}
+          FUNCTION_APP_STAGING_SLOT: ${{ env.AZURE_FUNCTION_APP_STAGING_DEPLOYMENT_SLOT }}
+          FUNCTION_APP_PRODUCTION_SLOT: ${{ env.AZURE_FUNCTION_APP_PRODUCTION_DEPLOYMENT_SLOT }}
