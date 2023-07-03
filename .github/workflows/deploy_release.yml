@@ -4,6 +4,11 @@ on:
   release:
     types: [published]
 
+  # GH permission requests for OpenID token for auth with Azure federated creds
+permissions:
+  id-token: write
+  contents: write
+
 env:
   KV_SUBSCRIPTION_ID: '7df4fea2-d719-4abe-890b-37cd0298be98'
   KV_NAME: 'kv-ghspns-01'
@@ -32,10 +37,7 @@ env:
   # AZURE_APPCONFIG_NAME: <env>
   # FUNCTION_APP_PUB_PROFILE: <env>
     
-  # GH permission requests for OpenID token for auth with Azure federated creds
-  permissions:
-    id-token: write
-    contents: write
+
 
 jobs:
   deploy-published-release:
