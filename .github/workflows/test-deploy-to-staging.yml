@@ -217,7 +217,7 @@ jobs:
           # Name of the Azure Function App
           app-name: ${{ env.FUNCTION_APP_NAME }}
           # Path to package or folder. *.zip or a folder to deploy
-          package: './AKVAADAppClientSecretRotationHttp'
+          package: '.'
           # Publish profile (*.publishsettings) file contents with web deploy secrets
           publish-profile: ${{ env.FUNCTION_APP_PUB_PROFILE }}
           # Remove unwanted files defined in .funcignore file (default: 'false'). When this is set to 'true', 'package' should point to the folder of host.json.
