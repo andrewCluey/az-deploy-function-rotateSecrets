@@ -5,10 +5,9 @@ on:
     types: [published]
 
 env:
-  # all Azure Functions are at the root of the project
-  AZURE_FUNCTION_APP_PACKAGE_PATH: ''
   KV_SUBSCRIPTION_ID:
   KV_NAME:
+  SPN_NAME: 
   
   
   # ARM deployment instance name (used to extract outputs)
@@ -56,6 +55,20 @@ jobs:
       ######################################################################
       # get SPN auth secrets
       ######################################################################
+
+      - name: Azure CLI script
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.49.0
+          inlineScript: |
+            az account show
+            az keyvault secret show --vault-name ${{ env.KV_NAME }} --name $SPN_NAME
+          env:
+            SPN_NAME: ${{ env.SPN_NAME }}
+            #SPN_NAME: ${{ env.environment }}${{ env.SPN_SUFFIX }}
+            
+
+        
       - name: Get SPN Secrets
           shell: bash
           run: |
