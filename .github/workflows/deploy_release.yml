@@ -5,9 +5,10 @@ on:
     types: [published]
 
 env:
-  KV_SUBSCRIPTION_ID:
-  KV_NAME:
-  SPN_NAME: 
+  KV_SUBSCRIPTION_ID: '7df4fea2-d719-4abe-890b-37cd0298be98'
+  KV_NAME: 'kv-ghspns-01'
+  SPN_SECRET_NAME: 'azfunc-secretRotate-bot_secret'
+  SPN_CLIENTID_SECRET: 'azfunc-secretRotate-bot_clientid'
   
   
   # ARM deployment instance name (used to extract outputs)
@@ -62,10 +63,12 @@ jobs:
           azcliversion: 2.49.0
           inlineScript: |
             az account show
-            echo "SPN_SECRET=$(az keyvault secret show --vault-name $KV_NAME --name $SPN_NAME --ouput tsv)" >> $GITHUB_ENV
+            echo "SPN_SECRET=$(az keyvault secret show --vault-name $KV_NAME --name $SPN_SECRET_NAME --ouput tsv)" >> $GITHUB_ENV
+            echo "SPN_CLIENTID=$(az keyvault secret show --vault-name $KV_NAME --name $SPN_CLIENTID_SECRET --ouput tsv)" >> $GITHUB_ENV
           env:
-            SPN_NAME: ${{ env.SPN_NAME }}
+            SPN_SECRET_NAME: ${{ env.SPN_SECRET_NAME }}
             KV_NAME: ${{ env.KV_NAME }}
+            SPN_CLIENTID_SECRET: ${{ env.SPN_CLIENTID_SECRET }}
             #SPN_NAME: ${{ env.environment }}${{ env.SPN_SUFFIX }}
 
       ######################################################################
@@ -73,7 +76,7 @@ jobs:
       ######################################################################
       - name: 🔑 SPN Login to Azure
       run: |
-        az login --service-principal --tenant $TENANT_ID --username $CLIENT_ID --password $CLIENT_SECRET    
+        az login --service-principal --tenant $TENANT_ID --username $SPN_CLIENTID --password $SPN_SECRET    
       env:
         TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
