@@ -31,3 +31,9 @@ module functionAppSettings 'br:ascbicep.azurecr.io/bicep/modules/funtionappsetti
     storageAccountAccessKey: azFuncStorageDetails.listKeys().keys[0].value
   }
 }
+
+
+//outputs
+output appInsightsInstrumentationKey string = functionApp.outputs.appInsightsInstrumentationKey
+output functionAppName string = functionApp.outputs.functionAppName
+output functionAppSlot string = functionApp.outputs.functionAppSlot
