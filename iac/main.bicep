@@ -12,7 +12,7 @@ resource azFuncStorageDetails 'Microsoft.Storage/storageAccounts@2022-09-01' exi
 
 
 // Resource Deployments
-module functionApp 'br:ascbicep.azurecr.io/bicep/modules/functionapp:v1.4' = {
+module functionApp 'br:ascbicep.azurecr.io/bicep/modules/functionapp:v1.5' = {
   name: 'devFuncRotateSecrets'
   params: {
     appName: appName
