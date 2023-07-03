@@ -135,9 +135,6 @@ jobs:
           FUNCTION_APP_NAME: ${{ env.FUNCTION_APP_NAME }}
           FUNCTION_APP_SLOT_NAME: ${{ env.FUNCTION_APP_SLOT_NAME }}
 
-      - name: test profile
-        run: |
-          echo ${{ env.FUNCTION_APP_PUB_PROFILE }}
       ######################################################################
       # deploy function app
       ######################################################################
