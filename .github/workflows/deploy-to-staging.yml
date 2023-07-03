@@ -1,7 +1,7 @@
 ######################################################################
 # Build, test & deploy the Azure Function app on pushes to main.
 ######################################################################
-name: Staging build, test & deploy app
+name: Staging deploy function App
 
 on:
   workflow_dispatch:

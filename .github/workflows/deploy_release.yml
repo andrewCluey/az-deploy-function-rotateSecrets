@@ -62,26 +62,11 @@ jobs:
           azcliversion: 2.49.0
           inlineScript: |
             az account show
-            az keyvault secret show --vault-name ${{ env.KV_NAME }} --name $SPN_NAME
+            echo "SPN_SECRET=$(az keyvault secret show --vault-name $KV_NAME --name $SPN_NAME --ouput tsv)" >> $GITHUB_ENV
           env:
             SPN_NAME: ${{ env.SPN_NAME }}
+            KV_NAME: ${{ env.KV_NAME }}
             #SPN_NAME: ${{ env.environment }}${{ env.SPN_SUFFIX }}
-            
-
-        
-      - name: Get SPN Secrets
-          shell: bash
-          run: |
-            secret_names_array=$(az keyvault secret list --subscription ${{ env.KV_SUBSCRIPTION_ID }} --vault-name ${{ env.KV_NAME }} --output tsv --query '[].name')
-      
-            for name in $secret_names_array; do
-              value=$(az keyvault secret show --subscription ${{ env.KV_SUBSCRIPTION_ID }} --vault-name ${{ env.KV_NAME }} --name ${name} --query value --output tsv)
-              modified_name=$(echo $name | sed 's/\([a-z]\)\([A-Z]\)/\1_\U\2/g' | tr "-" "_" | tr '[:lower:]' '[:upper:]')
-              echo "Saving '${name}' Key Vault secret as environment variable: ${modified_name}"
-              echo "$modified_name=$value" >>$GITHUB_ENV
-              echo "::add-mask::$value"
-            done
-
 
       ######################################################################
       # Login to Azure using returned Secrets & swap deployment slot
