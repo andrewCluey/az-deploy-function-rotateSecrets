@@ -39,16 +39,25 @@ env:
 
 jobs:
   deploy-published-release:
+    name: Deploy Published Release
     runs-on: ubuntu-latest
     steps:
+      ######################################################################
+      # checkout full codebase
+      ######################################################################
+      - name: Checkout repo codebase
+        uses: actions/checkout@main
+        with:
+          fetch-depth: 1
+          clean: true
+          submodules: false      
       - name: 🔑 Login to Azure
         uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      
-      
+
       ######################################################################
       # get SPN auth secrets
       ######################################################################
@@ -71,12 +80,12 @@ jobs:
       # Login to Azure using returned Secrets & swap deployment slot
       ######################################################################
       - name: 🔑 SPN Login to Azure
-      run: |
-        az login --service-principal --tenant $TENANT_ID --username $SPN_CLIENTID --password $SPN_SECRET    
-      env:
-        TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: |
+          az login --service-principal --tenant $TENANT_ID --username $SPN_CLIENTID --password $SPN_SECRET    
+        env:
+          TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
 
       - name: 🔀 Swap staging & production deployment slot
         run: |
