@@ -41,9 +41,6 @@ jobs:
   deploy-published-release:
     runs-on: ubuntu-latest
     steps:
-      ######################################################################
-      # login to Azure CLI via federated credential
-      ######################################################################
       - name: 🔑 Login to Azure
         uses: azure/login@v1
         with:
