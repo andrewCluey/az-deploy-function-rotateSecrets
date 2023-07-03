@@ -35,7 +35,7 @@ env:
   # GH permission requests for OpenID token for auth with Azure federated creds
   permissions:
     id-token: write
-    contents: read
+    contents: write
 
 jobs:
   deploy-published-release:
