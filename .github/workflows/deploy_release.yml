@@ -70,13 +70,10 @@ jobs:
           azcliversion: 2.49.0
           inlineScript: |
             az account show
-            echo "SPN_SECRET=$(az keyvault secret show --vault-name $KV_NAME --name $SPN_SECRET_NAME --ouput tsv)" >> $GITHUB_ENV
-            echo "SPN_CLIENTID=$(az keyvault secret show --vault-name $KV_NAME --name $SPN_CLIENTID_SECRET --ouput tsv)" >> $GITHUB_ENV
+            echo "SPN_SECRET=$(az keyvault secret show --vault-name $KV_NAME --name ${{ env.SPN_SECRET_NAME }} --ouput tsv)" >> $GITHUB_ENV
+            echo "SPN_CLIENTID=$(az keyvault secret show --vault-name $KV_NAME --name ${{ env.SPN_CLIENTID_SECRET }} --ouput tsv)" >> $GITHUB_ENV
           env:
-            SPN_SECRET_NAME: ${{ env.SPN_SECRET_NAME }}
             KV_NAME: ${{ env.KV_NAME }}
-            SPN_CLIENTID_SECRET: ${{ env.SPN_CLIENTID_SECRET }}
-            #SPN_NAME: ${{ env.environment }}${{ env.SPN_SUFFIX }}
 
       ######################################################################
       # Login to Azure using returned Secrets & swap deployment slot
