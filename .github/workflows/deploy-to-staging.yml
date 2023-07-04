@@ -75,6 +75,8 @@ jobs:
       ######################################################################
       - name: 🚀 Deploy infrastructure
         run: |
+          az version
+          az bicep version
           az deployment group create --name $DEPLOYMENT_NAME --resource-group $RESOURCE_GROUP --template-file ./iac/main.bicep --parameters funcStorageAccountName=$STORAGEACCOUNT_PREFIX
         env:
           DEPLOYMENT_NAME: ${{ env.DEPLOYMENT_NAME }}
